@@ -1,7 +1,7 @@
 @def title = "Template"
 @def showall = true
-@def tags = ["template", "fix-me"]
+@def tags = ["models", "solvers", "jso-compliant"]
 
-\preamble{AUTHORS}
+\preamble{Abel S. Siqueira and João Okimoto}
 
 \literate{/index.jl}
