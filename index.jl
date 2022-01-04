@@ -55,9 +55,9 @@ starting from point [-1.2; 1.0].
 using Plots
 gr(size=(600,300))
 contour(-2:0.02:2, -0.5:0.02:1.5, (x,y) -> (x - 1)^2 + 4 * (y - x^2)^2, levels=(0:0.2:10).^2)
-png(joinpath(@OUTPUT, "prob1")) # hide
+png(joinpath("__site/assets", "prob1")) # hide
 
-# \figalt{Contour plot of objective}{prob1.png}
+# {{ rfig prob1.png Contour plot of objective }}
 
 #=
 Notice that the solution of the problem, i.e., the point at which the function is minimum, is $x = (1,1)^T$.
@@ -442,18 +442,18 @@ Internally we use the package BenchmarkProfiles, though using `performance_profi
 
 using Plots
 performance_profile(stats, df -> df.elapsed_time)
-png(joinpath(@OUTPUT, "perfprof")) # hide
+png(joinpath("__site/assets", "perfprof")) # hide
 
-# \figalt{Performance profile}{perfprof.png}
+# {{ rfig perfprof.png Performance profile }}
 
 #=
 Notice how the profile indicate that all problems were solved by `newton`, although it is clearly not the case. That happens because our cost function for the performance profile was only the elapsed time. A better approach would be something like.
 =#
 cost(df) = (df.status .!= :first_order) * Inf + df.elapsed_time
 performance_profile(stats, cost)
-png(joinpath(@OUTPUT, "perfprof2")) # hide
+png(joinpath("__site/assets", "perfprof2")) # hide
 
-# \figalt{Performance profile}{perfprof2.png}
+# {{ rfig perfprof2.png Performance profile }}
 
 # ## Improving the solver more
 
@@ -543,9 +543,9 @@ solvers = Dict(:newton => newton2, :lbfgs => lbfgs)
 stats = bmark_solvers(solvers, problems)
 cost(df) = (df.status .!= :first_order) * Inf + df.elapsed_time
 performance_profile(stats, cost)
-png(joinpath(@OUTPUT, "perfprof3")) # hide
+png(joinpath("__site/assets", "perfprof3")) # hide
 
-# \figalt{Performance profile}{perfprof3.png}
+# {{ rfig perfprof3.png Performance profile }}
 
 #=
 [^1]: Technically, it can be defined more generally, but the choice we made has better behaved values. [Wikipedia page: Rosenbrock page, access on 2021/Mar/17.](https://en.wikipedia.org/wiki/Rosenbrock_function#:~:text=In%20mathematical%20optimization%2C%20the%20Rosenbrock,valley%20or%20Rosenbrock%27s%20banana%20function)
