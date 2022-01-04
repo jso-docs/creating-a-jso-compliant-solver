@@ -3,4 +3,4 @@ solvers = Dict(:newton => newton2, :lbfgs => lbfgs)
 stats = bmark_solvers(solvers, problems)
 cost(df) = (df.status .!= :first_order) * Inf + df.elapsed_time
 performance_profile(stats, cost)
-png(joinpath(@OUTPUT, "perfprof3")) # hide
+png(joinpath("__site/assets", "perfprof3")) # hide

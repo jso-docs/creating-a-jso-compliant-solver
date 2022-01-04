@@ -3,7 +3,7 @@
 using Plots
 gr(size=(600,300))
 contour(-2:0.02:2, -0.5:0.02:1.5, (x,y) -> (x - 1)^2 + 4 * (y - x^2)^2, levels=(0:0.2:10).^2)
-png(joinpath(@OUTPUT, "prob1")) # hide
+png(joinpath("__site/assets", "prob1")) # hide
 
 using ADNLPModels
 
@@ -222,11 +222,11 @@ rm("newton.tex") # hide
 
 using Plots
 performance_profile(stats, df -> df.elapsed_time)
-png(joinpath(@OUTPUT, "perfprof")) # hide
+png(joinpath("__site/assets", "perfprof")) # hide
 
 cost(df) = (df.status .!= :first_order) * Inf + df.elapsed_time
 performance_profile(stats, cost)
-png(joinpath(@OUTPUT, "perfprof2")) # hide
+png(joinpath("__site/assets", "perfprof2")) # hide
 
 function newton2(
   nlp :: AbstractNLPModel; # Only mandatory argument
@@ -302,5 +302,5 @@ solvers = Dict(:newton => newton2, :lbfgs => lbfgs)
 stats = bmark_solvers(solvers, problems)
 cost(df) = (df.status .!= :first_order) * Inf + df.elapsed_time
 performance_profile(stats, cost)
-png(joinpath(@OUTPUT, "perfprof3")) # hide
+png(joinpath("__site/assets", "perfprof3")) # hide
 
