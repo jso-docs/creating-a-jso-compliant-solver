@@ -1,4 +1,4 @@
-@def title = "Template"
+@def title = "Creating a JSO-compliant solver"
 @def showall = true
 @def tags = ["models", "solvers", "jso-compliant"]
 
