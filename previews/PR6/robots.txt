@@ -1,0 +1,4 @@
+Sitemap: https://creating-a-jso-compliant-solver.netlify.app/previews/PR6/sitemap.xml
+
+User-agent: *
+Disallow:
