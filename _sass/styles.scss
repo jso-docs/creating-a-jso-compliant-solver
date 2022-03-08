@@ -7,7 +7,7 @@
     url("https://cdn.jsdelivr.net/gh/cormullion/juliamono/webfonts/JuliaMono-Regular.woff2");
 }
 
-@import url('https://fonts.googleapis.com/css?family=Inter');
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Nunito&display=swap');
 
 $light-gray: rgb(227, 238, 250);
 $dark-gray: #333333;
@@ -29,6 +29,12 @@ $footer-padding: 6rem 1.5rem 3rem;
 $julia-background: lighten($primary, 41%);
 $plaintext-background: #000;
 
+@import "../node_modules/bulma/bulma.sass";
+
+.title {
+  font-family: "Nunito", sans-serif !important;
+}
+
 p {
   text-align: justify;
 }
@@ -36,6 +42,7 @@ p {
 pre {
   background-color: $body-background-color !important;
   margin-bottom: 0px !important;
+  position: relative;
 }
 
 .language-julia, .julia {
@@ -51,4 +58,36 @@ pre {
   margin-left: 25px;
 }
 
-@import "../node_modules/bulma/bulma.sass";
+.copy-button {
+  position: absolute !important;
+  padding: 10px;
+  margin: 30px;
+  top: 0;
+  right: 0;
+  transition: 200ms;
+}
+
+.copy-ref {
+  border-width: 0px !important;
+  background-color: transparent !important;
+  transition: 200ms;
+  padding: 2px !important;
+
+  :hover {
+    background-color: $primary;
+    transition: 200ms;
+  }
+}
+
+.copy-ref span {
+  transition: 200ms;
+  padding: 2px !important;
+  :hover {
+    color: $julia-background;
+    transition: 200ms;
+  }
+}
+
+.references ul li {
+  margin-bottom: 15px;
+}

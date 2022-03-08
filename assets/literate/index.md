@@ -49,12 +49,12 @@ $$ \min_x \ (x_1 - 1)^2 + 4 (x_2 - x_1^2)^2, $$
 
 starting from point [-1.2; 1.0].
 
-```julia:ex1
+````julia:ex1
 using Plots
 gr(size=(600,300))
 contour(-2:0.02:2, -0.5:0.02:1.5, (x,y) -> (x - 1)^2 + 4 * (y - x^2)^2, levels=(0:0.2:10).^2)
 png(joinpath("__site/assets", "prob1")) # hide
-```
+````
 
 {{ rfig prob1.png Contour plot of objective }}
 
@@ -64,21 +64,21 @@ This can be estimated by the plot and verified by noticing that $f(1,1) = 0$ and
 To write this problem as a NLPModel, we have a few options, but for now let's consider the simplest one: ADNLPModels.
 ADNLPModels has a simple interface and it computes the derivatives using automatic differentiation from other packages.
 
-```julia:ex2
+````julia:ex2
 using ADNLPModels
 
 nlp = ADNLPModel(
   x -> (x[1] - 1)^2 + 4 * (x[2] - x[1]^2)^2, # function
   [-1.2; 1.0] # starting point
 )
-```
+````
 
 Now we access the information of the model, and its functions.
 The information is all stored on `nlp.meta`, while the functions are defined by NLPModels.
 
 The main information you may want is summarised below
 
-```julia:ex3
+````julia:ex3
 (
   nlp.meta.nvar, # number of variable
   nlp.meta.ncon, # number of constraints
@@ -86,59 +86,59 @@ The main information you may want is summarised below
   nlp.meta.lcon, nlp.meta.ucon, # bounds on constraints
   nlp.meta.x0 # starting point
 )
-```
+````
 
 Furthermore, you can use some functions from NLPModels to query whether the problem has bounds, equalities, inequalities, etc.
 
-```julia:ex4
+````julia:ex4
 using NLPModels
 
 unconstrained(nlp)
-```
+````
 
 Finally, we can access the objective function, its gradients and Hessian with
 
-```julia:ex5
+````julia:ex5
 x = nlp.meta.x0
 obj(nlp, x)
-```
+````
 
-```julia:ex6
+````julia:ex6
 grad(nlp, x)
-```
+````
 
-```julia:ex7
+````julia:ex7
 hess(nlp, x)
-```
+````
 
 For our basic unconstrained solver that's enough. If you want more functions, check the [NLPModels reference guide](/pages/references/NLPModels/).
 
 Notice that the Hessian returned from `hess` has only the lower triangle.
 That's done, in general, to avoid storing repeated elements. In this dense case, this isn't much helpful, so we can simply use `Symmetric` to fill the rest.
 
-```julia:ex8
+````julia:ex8
 using LinearAlgebra
 
 Symmetric(hess(nlp, x), :L)
-```
+````
 
 To compute Cholesky and verify that it succeeds, we use `cholesky` and `issuccess`.
 
-```julia:ex9
+````julia:ex9
 B = Symmetric(hess(nlp, x), :L)
 factor = cholesky(B, check=false) # check is false to prevent an error from being thrown.
 issuccess(factor)
-```
+````
 
-```julia:ex10
+````julia:ex10
 B = -Symmetric(hess(nlp, x), :L) # Since the last one is positive definite, this one shouldn't be
 factor = cholesky(B, check=false)
 issuccess(factor)
-```
+````
 
 Therefore the direction computation can be done as
 
-```julia:ex11
+````julia:ex11
 ρ = 0.0 # First iteration
 
 B = Symmetric(hess(nlp, x), :L)
@@ -148,12 +148,12 @@ while !issuccess(factor)
   factor = cholesky(B + ρ * I, check=false)
 end
 d = factor \ -grad(nlp, x)
-```
+````
 
 The second part of our method is the step length computation.
 Let's use `α = 1e-2` for our Armijo parameter.
 
-```julia:ex12
+````julia:ex12
 α = 1e-2
 t = 1.0
 fx = obj(nlp, x)
@@ -163,14 +163,14 @@ while !(ft ≤ fx + t * slope)
   global t *= 0.5 # global is used because we are outside a function
   ft = obj(nlp, x + t * d)
 end
-```
+````
 
 The two snippets above are what define our method.
 We'll use the first order criteria for stopping the algorithm, that is
 
 $$ \| \nabla f(x_k) \| < \epsilon $$
 
-```julia:ex13
+````julia:ex13
 using SolverCore
 
 function newton(nlp :: AbstractNLPModel)
@@ -208,7 +208,7 @@ function newton(nlp :: AbstractNLPModel)
   return GenericExecutionStats(status, nlp)
 
 end
-```
+````
 
 Notice the two conditions for the method to be JSO-compliant:
 
@@ -228,18 +228,18 @@ The NLPModels API provides you with the derivatives, and anything else can resid
 
 Let's run our implementation on the problem we defined before.
 
-```julia:ex14
+````julia:ex14
 output = newton(nlp)
 
 println(output)
-```
+````
 
 The `GenericExecutionStats` structure holds all relevant information. Notice, however, that it doesn't have anything useful in this case.
 Naturally, we have to return that information as well.
 
 Update your `newton` function so that the end is something like the following.
 
-```julia:ex15
+````julia:ex15
 function newton(nlp :: AbstractNLPModel)
   # …
   x = copy(nlp.meta.x0) # starting point # hide
@@ -267,21 +267,21 @@ function newton(nlp :: AbstractNLPModel)
 
   return GenericExecutionStats(status, nlp, solution=x, objective=obj(nlp, x))
 end
-```
+````
 
 Now run again
 
-```julia:ex16
+````julia:ex16
 output = newton(nlp)
 
 println(output)
-```
+````
 
 That's already better. Now we can access the solution with
 
-```julia:ex17
+````julia:ex17
 output.solution
-```
+````
 
 ## Improving the solver
 
@@ -294,9 +294,9 @@ The two main conditions we'll add are the number of iterations and elapsed time 
 In this case, the result of the solver run may no be a `:first_order` situation anymore, which means that we need to use other `status` value.
 Here's the list:
 
-```julia:ex18
+````julia:ex18
 SolverCore.show_statuses()
-```
+````
 
 We can see that `max_iter` and `max_time` are the most adequates for our case.
 
@@ -306,7 +306,7 @@ We prefer to use keywords.
 
 Change your code considering the changes below:
 
-```julia:ex19
+````julia:ex19
 function newton(
   nlp :: AbstractNLPModel; # Only mandatory argument, notice the ;
   max_time :: Float64 = 30.0, # maximum allowed time
@@ -357,7 +357,7 @@ function newton(
 
   return GenericExecutionStats(status, nlp, solution=x, objective=obj(nlp, x), iter=iter, elapsed_time=Δt)
 end
-```
+````
 
 Many of the lines are self-explanatory, so let's focus on the complex ones.
 ```
@@ -381,56 +381,56 @@ With a solver in hands, we can start to do more advanced things, such as benchma
 
 Since we only implemented one solved, we'll use `lbfgs` from the package JSOSolvers to compare against.
 
-```julia:ex20
+````julia:ex20
 using JSOSolvers
 
 output = lbfgs(nlp)
 print(output)
-```
+````
 
 And to compare both solvers, we need a collection of problems.
 Let's just create one manually for now.
 
-```julia:ex21
+````julia:ex21
 problems = [
   ADNLPModel(x -> x[1]^2 + 4 * x[2]^2, ones(2)),
   ADNLPModel(x -> (1 - x[1])^2 + 100 * (x[2] - x[1]^2)^2, [-1.2; 1.0]),
   ADNLPModel(x -> x[1]^2 + x[2] - 11 + (x[1] + x[2]^2 - 7)^2, [-1.0; 1.0]),
   ADNLPModel(x -> log(exp(-x[1] - 2x[2]) + exp(x[1] + 2) + exp(2x[2] - 1)), zeros(2))
 ];
-```
+````
 
 And now, we use `bmark_solvers` from the package SolverBenchmark to automatically run both solvers on all these problems.
 
-```julia:ex22
+````julia:ex22
 using SolverBenchmark
 
 solvers = Dict(:newton => newton, :lbfgs => lbfgs)
 stats = bmark_solvers(solvers, problems)
-```
+````
 
 The results is a Dictionary of Symbols to DataFrame tables.
 
-```julia:ex23
+````julia:ex23
 @show typeof(stats)
 @show keys(stats)
-```
+````
 
 Using SolverBenchmark, it's easy to create a markdown table from the results.
 
-```julia:ex24
+````julia:ex24
 cols = [:name, :status, :objective, :elapsed_time, :iter]
 pretty_stats(stats[:newton][!, cols])
-```
+````
 
 We can also create a similar table in .tex format, using something like
 
-```julia:ex25
+````julia:ex25
 open("newton.tex", "w") do io
   pretty_latex_stats(io, stats[:newton][!, cols])
 end
 rm("newton.tex") # hide
-```
+````
 
 That will give us a nicely formatted table that we can just plug into our
 latex code.
@@ -440,21 +440,21 @@ latex code.
 Lastly, for comparison of the methods, it is costumary to show a Performance Profile.[^2]
 Internally we use the package BenchmarkProfiles, though using `performance_profile` from SolverBenchmark will actually work directly with the output of `bmark_solvers`.
 
-```julia:ex26
+````julia:ex26
 using Plots
 performance_profile(stats, df -> df.elapsed_time)
 png(joinpath("__site/assets", "perfprof")) # hide
-```
+````
 
 {{ rfig perfprof.png Performance profile }}
 
 Notice how the profile indicate that all problems were solved by `newton`, although it is clearly not the case. That happens because our cost function for the performance profile was only the elapsed time. A better approach would be something like.
 
-```julia:ex27
+````julia:ex27
 cost(df) = (df.status .!= :first_order) * Inf + df.elapsed_time
 performance_profile(stats, cost)
 png(joinpath("__site/assets", "perfprof2")) # hide
-```
+````
 
 {{ rfig perfprof2.png Performance profile }}
 
@@ -466,7 +466,7 @@ The following function is an improvement of the code in a few points:
   - Stopping tolerances `atol` and `rtol` are used for a stopping criteria $$ \|\nabla f(x_k)\| \leq \epsilon_{\text{absolute}} + \epsilon_{\text{relative}}\| \nabla f(x_0)\| $$
   - After computing the direction, we reduce `ρ` to try to speed up the method.
 
-```julia:ex28
+````julia:ex28
 function newton2(
   nlp :: AbstractNLPModel; # Only mandatory argument
   x :: AbstractVector = copy(nlp.meta.x0), # optimal starting point
@@ -536,17 +536,17 @@ function newton2(
   return GenericExecutionStats(status, nlp, solution=x, objective=fx, dual_feas=norm(∇fx), iter=iter, elapsed_time=Δt)
 
 end
-```
+````
 
 And now testing again.
 
-```julia:ex29
+````julia:ex29
 solvers = Dict(:newton => newton2, :lbfgs => lbfgs)
 stats = bmark_solvers(solvers, problems)
 cost(df) = (df.status .!= :first_order) * Inf + df.elapsed_time
 performance_profile(stats, cost)
 png(joinpath("__site/assets", "perfprof3")) # hide
-```
+````
 
 {{ rfig perfprof3.png Performance profile }}
 
