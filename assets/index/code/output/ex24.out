@@ -1,8 +1,8 @@
 ┌─────────┬─────────────┬───────────┬──────────────┬────────┐
 │    name │      status │ objective │ elapsed_time │   iter │
 ├─────────┼─────────────┼───────────┼──────────────┼────────┤
-│ Generic │ first_order │  2.47e-31 │     5.86e-01 │      1 │
-│ Generic │ first_order │  3.74e-21 │     6.82e-01 │     21 │
-│ Generic │    max_iter │ -8.36e+00 │     5.72e-01 │    100 │
-│ Generic │ first_order │  1.43e+00 │     6.18e-01 │      5 │
+│ Generic │ first_order │  2.47e-31 │     5.12e-01 │      1 │
+│ Generic │ first_order │  3.74e-21 │     6.16e-01 │     21 │
+│ Generic │    max_iter │ -8.36e+00 │     5.52e-01 │    100 │
+│ Generic │ first_order │  1.43e+00 │     5.58e-01 │      5 │
 └─────────┴─────────────┴───────────┴──────────────┴────────┘
